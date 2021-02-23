@@ -2,6 +2,9 @@ import matplotlib.pyplot as plt
 
 filenames = ["output/out_ba_25000_3_1000_s.txt"]
 
+# this code averages result for nodes and produces proc_ file that contains LaTeX Tikzpicture-compatible data 
+# for visualising friendship index dynamics
+
 if __name__ == "__main__":
     for filename in filenames:
         x_range = range(1000, int(filename.split('_')[2]), 50)
@@ -29,9 +32,3 @@ if __name__ == "__main__":
 
         f_out.close()
         f.close()
-        #plt.plot(x_range, processed_values)
-        #plt.show()
-        
-        #print(len(processed_values))
-        #print(processed_values)
-            

@@ -2,6 +2,7 @@ filename = "output/hist_out_ba_10000_3.txt"
 
 ### How to run:
 # Change filename variable above, insert automatically generated in main.py file that starts with "hist_"
+# Return percentage of friendship index values for nodes in the network that are larger than one.
 
 def get_beta_count(datastring):
     return int(datastring.split('\t')[1])
