@@ -30,10 +30,7 @@ input_type_num = 2
 
 def get_neighbor_summary_degree(graph, node):
     neighbors_of_node = graph.neighbors(node)
-    acc = 0
-    for neighbor in neighbors_of_node:
-        acc += graph.degree(neighbor)
-    return acc
+    return sum(graph.degree(neighbor) for neighbor in neighbors_of_node)
 
 
 def get_neighbor_average_degree(graph, node, si=None):
@@ -61,7 +58,7 @@ def analyze_fi_graph(graph, filename):
         if new_b > maxb:
             maxb = new_b
         bs.append(new_b)
-    
+
     # n=values, bins=edges of bins
     n, bins, _ = plt.hist(bs, bins=range(int(maxb)), rwidth=0.85)
 
@@ -69,7 +66,7 @@ def analyze_fi_graph(graph, filename):
     n_bins = zip(n, bins)
     n_bins = list(filter(lambda x: x[0] > 0, n_bins))
     n, bins = [ a for (a,b) in n_bins ], [ b for (a,b) in n_bins ]
-    
+
     # get log-log scale distribution
     lnt, lnb = [], []
     for i in range(len(bins) - 1):
@@ -87,12 +84,11 @@ def analyze_fi_graph(graph, filename):
     linreg_predict = model.predict(np_lnt)
 
     [directory, filename] = filename.split('/')
-    f = open(directory + "/hist_" + filename, "w")
-    f.write("t\tb\tlnt\tlnb\tlinreg\t k=" + str(model.coef_) + ", b=" + str(model.intercept_) + "\n")
+    with open(directory + "/hist_" + filename, "w") as f:
+        f.write("t\tb\tlnt\tlnb\tlinreg\t k=" + str(model.coef_) + ", b=" + str(model.intercept_) + "\n")
 
-    for i in range(len(lnb)):
-        f.write(str(bins[i]) + "\t" + str(int(n[i])) + "\t" + str(lnt[i]) + "\t" + str(lnb[i]) + "\t" + str(linreg_predict[i]) + "\n")
-    f.close()
+        for i in range(len(lnb)):
+            f.write(str(bins[i]) + "\t" + str(int(n[i])) + "\t" + str(lnt[i]) + "\t" + str(lnb[i]) + "\t" + str(linreg_predict[i]) + "\n")
 
 
 # 0 - From file
@@ -107,14 +103,11 @@ def create_ba(n, m, focus_indices):
     G = nx.complete_graph(m)
 
     # get node statistics
-    s_a_b_focus = []
-    for focus_ind in focus_indices:
-        s_a_b_focus.append(([], [], []))
-
+    s_a_b_focus = [([], [], []) for _ in focus_indices]
     for k in range(m, n + 1):
         deg = dict(G.degree)  
         G.add_node(k) 
-          
+
         vertex = list(deg.keys()) 
         weights = list(deg.values())
 
@@ -158,7 +151,6 @@ def experiment_ba():
     ### Change these parameters ###
     n = 10000
     m = 3
-    number_of_experiments = 3
     focus_indices = [50, 100]
     ###  
     filename = f"output/out_ba_{n}_{m}"
@@ -177,6 +169,7 @@ def experiment_ba():
         for i in range(len(focus_indices)):
             for f in files[i]:
                 f.write("> n=" + str(n) + " m=" + str(m) + " " + now.strftime("%d/%m/%Y %H:%M:%S") + "\n")
+        number_of_experiments = 3
         for _ in range(number_of_experiments):
             graph, result = create_ba(n, m, focus_indices)
             for i in range(len(focus_indices)):
@@ -280,13 +273,12 @@ def experiment_triadic():
     n = 10000
     m = 3
     p = 0.75
-    number_of_experiments = 3
     focus_indices = [10, 50, 100]
-    filename = f"output/out_tri_{n}_{m}_{p}"
-
     should_write = True
     if should_write:
         files = []
+        filename = f"output/out_tri_{n}_{m}_{p}"
+
         for ind in focus_indices:
             f_s = open(f"{filename}_{ind}_s.txt", "a")
             f_a = open(f"{filename}_{ind}_a.txt", "a")
@@ -297,6 +289,7 @@ def experiment_triadic():
         for i in range(len(focus_indices)):
             for f in files[i]:
                 f.write("> n=" + str(n) + " m=" + str(m) + " " + now.strftime("%d/%m/%Y %H:%M:%S") + "\n")
+        number_of_experiments = 3
         for _ in range(number_of_experiments):
             graph, result = create_triadic(n, m, p, focus_indices)
             for i in range(len(focus_indices)):

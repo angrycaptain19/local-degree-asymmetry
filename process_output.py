@@ -10,25 +10,22 @@ if __name__ == "__main__":
         x_range = range(1000, int(filename.split('_')[2]), 50)
         metric_type = filename.split('.')[-2].split('_')[-1]
 
-        f = open(filename)
-        lines = f.readlines()
-        # Temporary
-        processed_values = [0 for x in lines[1].split(' ')]
-        data_count = 0
-        for line in lines:
-            if line.strip() and not (line.startswith(">")):
-                data_count += 1
-                values = line.split(' ')
-                for i in range(len(values)):
-                    processed_values[i] += float(values[i])
-        
-        for i in range(len(processed_values)):
-            processed_values[i] /= data_count
+        with open(filename) as f:
+            lines = f.readlines()
+            # Temporary
+            processed_values = [0 for x in lines[1].split(' ')]
+            data_count = 0
+            for line in lines:
+                if line.strip() and not (line.startswith(">")):
+                    data_count += 1
+                    values = line.split(' ')
+                    for i in range(len(values)):
+                        processed_values[i] += float(values[i])
 
-        f_out = open("proc_" + filename, "w")
-        f_out.write("t\t" + metric_type + "(t)\n")
-        for i in range(len(x_range)):
-            f_out.write(str(x_range[i]) + "\t" + str(processed_values[i]) + "\n")
+            for i in range(len(processed_values)):
+                processed_values[i] /= data_count
 
-        f_out.close()
-        f.close()
+            with open("proc_" + filename, "w") as f_out:
+                f_out.write("t\t" + metric_type + "(t)\n")
+                for i in range(len(x_range)):
+                    f_out.write(str(x_range[i]) + "\t" + str(processed_values[i]) + "\n")
